@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Socom1StreamOverlay.Helpers;
 using Socom1StreamOverlay.Models;
-using Memory;
+using Binarysharp.MemoryManagement;
 namespace Socom1StreamOverlay.Controls
 {
     public partial class PlayerDataLabel : UserControl
     {
-        private Mem _m = null;
         private PlayerDataModel _pdm;
         public Color livingStatus
         {
@@ -62,29 +61,5 @@ namespace Socom1StreamOverlay.Controls
            
         }
 
-        public Mem m
-        {
-            set { _m = value; }
-        }
-        private void lbl_PlayerName_Click(object sender, EventArgs e)
-        {
-
-
-            if (lbl_PlayerName.Tag != null)
-            {
-
-                string camera1PointerAddress = ByteConverstionHelper.byteArrayHexToAddressString(_m.ReadBytes(GameHelper.SPECTATOR_CAMERA_POINTER_ADDRESS, 4));
-
-                string playerPointer = "0" + this.PDM._pointerAddress.Substring(1, 7);
-
-                if (this.PDM._LivingStatus != "DEAD")
-                {
-                    _m.WriteMemory((int.Parse(camera1PointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.SPECTATOR_CAMERA_POINTER_OFFSET1).ToString("X4"), "bytes", ByteConverstionHelper.formatBytesToLittleEndian(int.Parse(playerPointer, System.Globalization.NumberStyles.HexNumber), 8));
-                    _m.WriteMemory((int.Parse(camera1PointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.SPECTATOR_CAMERA_POINTER_OFFSET2).ToString("X4"), "bytes", ByteConverstionHelper.formatBytesToLittleEndian(int.Parse(playerPointer, System.Globalization.NumberStyles.HexNumber), 8));
-
-                }
-            }
-
-        }
     }
 }

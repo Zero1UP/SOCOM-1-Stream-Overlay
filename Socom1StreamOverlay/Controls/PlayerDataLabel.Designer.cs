@@ -43,7 +43,6 @@
             this.lbl_PlayerName.Size = new System.Drawing.Size(100, 19);
             this.lbl_PlayerName.TabIndex = 0;
             this.lbl_PlayerName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lbl_PlayerName.Click += new System.EventHandler(this.lbl_PlayerName_Click);
             // 
             // hb_PlayerHealth
             // 

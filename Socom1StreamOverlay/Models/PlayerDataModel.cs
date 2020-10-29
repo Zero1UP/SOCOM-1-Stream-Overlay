@@ -12,7 +12,7 @@ namespace Socom1StreamOverlay.Models
         public string _Team { get; set; }
         public string _LivingStatus { get; set; }
         public decimal _PlayerHealth { get; set; }
-        public string _pointerAddress { get; set; }
+        public IntPtr _pointerAddress { get; set; }
         public int _hasMPBomb { get; set; }
     }
 }

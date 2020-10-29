@@ -1,4 +1,4 @@
-﻿using Memory;
+﻿using Binarysharp.MemoryManagement;
 using Socom1StreamOverlay.Controls;
 using Socom1StreamOverlay.Helpers;
 using Socom1StreamOverlay.Models;
@@ -13,12 +13,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Socom1StreamOverlay
 {
     public partial class frm_Main : Form
     {
-        Mem m = new Mem();
+        MemorySharp m = null;
         private const string PCSX2PROCESSNAME = "pcsx2dis";
         bool pcsx2Running;
 
@@ -107,8 +108,6 @@ namespace Socom1StreamOverlay
             label.playerHealth = (int)player._PlayerHealth;
             label.PDM = player;
 
-            label.m = m;
-
             if (player._LivingStatus == "DEAD")
             {
 
@@ -148,22 +147,26 @@ namespace Socom1StreamOverlay
 
             if (pcsx2Running)
             {
-                m.OpenProcess(PCSX2PROCESSNAME + ".exe");
+                m = new MemorySharp(Process.GetProcessesByName(PCSX2PROCESSNAME).First());
 
-                if ((m.ReadBytes(GameHelper.PLAYER_POINTER_ADDRESS, 4) != null) && (!m.ReadBytes(GameHelper.PLAYER_POINTER_ADDRESS, 4).SequenceEqual(new byte[] { 0, 0, 0, 0 })))
+
+                if ((m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false) != null) && (!m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4,false).SequenceEqual(new byte[] { 0, 0, 0, 0 })))
                 {
-                    if (m.ReadByte(GameHelper.GAME_ENDED_ADDRESS) == 0)
+
+                  
+                    if (m.Read<byte>(GameHelper.GAME_ENDED_ADDRESS,false) == 0)
                     {
-                        string playerDataLocationAddress = ByteConverstionHelper.byteArrayHexToAddressString(m.ReadBytes(GameHelper.PLAYER_POINTER_ADDRESS, 4));
-                        string playerTeam = GameHelper.GetTeamName(ByteConverstionHelper.byteArrayHexToHexString(m.ReadBytes((int.Parse(playerDataLocationAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.PLAYER_TEAMID_OFFSET).ToString("X4"), 4)));
+                        IntPtr playerDataLocationAddress = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false)), 16));
+                     
+                        string playerTeam = GameHelper.GetTeamName(ByteConverstionHelper.byteArrayHexToHexString(m.Read<byte>(playerDataLocationAddress + GameHelper.PLAYER_TEAMID_OFFSET, 4,false)));
 
                         //Get Room specific data
-                        int sealsRoundsWon = m.ReadByte(GameHelper.SEAL_WIN_COUNTER_ADDRESS);
-                        int terrRoundsWon = m.ReadByte(GameHelper.TERR_WIN_COUNTER_ADDRESS);
-                        int sealsAlive = m.ReadByte(GameHelper.SEALS_ALIVE_COUNTER_ADDRESS);
-                        int terrAlive = m.ReadByte(GameHelper.TERR_ALIVE_COUNTER_ADDRESS);
+                        int sealsRoundsWon = m.Read<byte>(GameHelper.SEAL_WIN_COUNTER_ADDRESS,false);
+                        int terrRoundsWon = m.Read<byte>(GameHelper.TERR_WIN_COUNTER_ADDRESS, false);
+                        int sealsAlive = m.Read<byte>(GameHelper.SEALS_ALIVE_COUNTER_ADDRESS, false);
+                        int terrAlive = m.Read<byte>(GameHelper.TERR_ALIVE_COUNTER_ADDRESS, false);
 
-                        string roundTime = ByteConverstionHelper.convertBytesToString(m.ReadBytes(GameHelper.ROUND_TIMER, 5));
+                        string roundTime = ByteConverstionHelper.convertBytesToString(m.Read<byte>(GameHelper.ROUND_TIMER, 5, false));
 
                        
                         playerData = processPlayers();
@@ -230,28 +233,29 @@ namespace Socom1StreamOverlay
         {
             List<PlayerDataModel> playerData = new List<PlayerDataModel>();
             //Make sure we are in a game.
-            if (m.ReadBytes(GameHelper.PLAYER_POINTER_ADDRESS, 4) != new byte[] { 0x00, 0x00, 0x00, 0x00 })
+            if ((m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false) != null) && (!m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false).SequenceEqual(new byte[] { 0, 0, 0, 0 })))
             {
+                IntPtr objectPtr = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(GameHelper.PLAYER_INDEX_POINTER_ADDRESS, 4, false)), 16));
 
-                string objectPtr = ByteConverstionHelper.byteArrayHexToAddressString(m.ReadBytes(GameHelper.PLAYER_INDEX_POINTER_ADDRESS, 4));
                 do
                 {
-                    string playerPointerAddress = ByteConverstionHelper.byteArrayHexToAddressString(m.ReadBytes((int.Parse(objectPtr, System.Globalization.NumberStyles.HexNumber) + GameHelper.PLAYER_INDEX_PLAYER_POINTER_OFFSET).ToString("X4"), 4));
-                    string playerNamePointerAddress = ByteConverstionHelper.byteArrayHexToAddressString(m.ReadBytes((int.Parse(playerPointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.PLAYER_NAME_OFFSET).ToString("X4"), 4));
-                    string teamID = ByteConverstionHelper.byteArrayHexToHexString(m.ReadBytes((int.Parse(playerPointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.PLAYER_TEAMID_OFFSET).ToString("X4"), 4));
+                    IntPtr playerPointerAddress = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(objectPtr +  GameHelper.PLAYER_INDEX_PLAYER_POINTER_OFFSET,4, false)),16));
+                    IntPtr playerNamePointerAddress = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(playerPointerAddress + GameHelper.PLAYER_NAME_OFFSET,4, false)),16));
+                    
+                    string teamID = ByteConverstionHelper.byteArrayHexToHexString(m.Read<byte>(playerPointerAddress + GameHelper.PLAYER_TEAMID_OFFSET,4, false));
                     string teamName = GameHelper.GetTeamName(teamID);
 
 
                     if (teamName == "SEALS" || teamName == "TERRORISTS")
                     {
                         PlayerDataModel PD = new PlayerDataModel();
-                        PD._pointerAddress = playerPointerAddress;
                         PD._Team = teamName;
-                        PD._PlayerHealth = ByteConverstionHelper.byteHexFloatToDecimal(m.ReadBytes((int.Parse(playerPointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.PLAYER_HEALTH_OFFSET).ToString("X4"), 4));
+                        PD._PlayerHealth = ByteConverstionHelper.byteHexFloatToDecimal(m.Read<byte>(playerPointerAddress + GameHelper.PLAYER_HEALTH_OFFSET,4, false));
 
-                        PD._PlayerName = ByteConverstionHelper.convertBytesToString(m.ReadBytes(playerNamePointerAddress, 20));
+                        PD._PlayerName = ByteConverstionHelper.convertBytesToString(m.Read<byte>(playerNamePointerAddress, 20, false));
                         //PD._hasMPBomb = m.readByte((int.Parse(playerPointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.ENTITY_HAS_MPBOMB).ToString("X4"));
 
+                        PD._pointerAddress = playerPointerAddress - 0x20000000;
 
                         if (PD._PlayerHealth != 0)
                         {
@@ -266,9 +270,9 @@ namespace Socom1StreamOverlay
 
                     }
 
-                    objectPtr = ByteConverstionHelper.byteArrayHexToAddressString(m.ReadBytes(objectPtr, 4)); // Get the next pointer in the list
+                    objectPtr = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(objectPtr, 4, false)),16)); // Get the next pointer in the list
 
-                } while (objectPtr.ToUpper() !=GameHelper.PLAYER_INDEX_POINTER_ADDRESS);
+                } while (objectPtr != GameHelper.PLAYER_INDEX_POINTER_ADDRESS);
             }
 
             return playerData;
