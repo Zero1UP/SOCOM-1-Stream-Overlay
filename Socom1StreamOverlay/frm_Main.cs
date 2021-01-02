@@ -183,34 +183,39 @@ namespace Socom1StreamOverlay
                         playerData = processPlayers();
 
                         resetPlayers();
-
-                        foreach (var item in playerData)
+                        try
                         {
-
-                            if (item._Team == "SEALS")
+                            foreach (var item in playerData)
                             {
 
-                                var playerDataLabel = pnl_Background.Controls
-                               .OfType<PlayerDataLabel>()
-                               .Where(pdl => pdl.Name.Contains("lbl_Seal_") && pdl.Text == "")
-                               .OrderBy(label => label.Name); ;
+                                if (item._Team == "SEALS")
+                                {
 
-                                setLabel(GetLabels("lbl_Seal_").First(), item, userHealth);
-
-                            }
-                            else if (item._Team == "TERRORISTS")
-                            {
-                                var playerDataLabel = pnl_Background.Controls
+                                    var playerDataLabel = pnl_Background.Controls
                                    .OfType<PlayerDataLabel>()
-                                   .Where(pdl => pdl.Name.Contains("lbl_Terr_") && pdl.Text == "")
-                                   .OrderBy(label => label.Name);
-                                setLabel(GetLabels("lbl_Terr_").First(), item, userHealth);
+                                   .Where(pdl => pdl.Name.Contains("lbl_Seal_") && pdl.Text == "")
+                                   .OrderBy(label => label.Name); ;
 
+                                    setLabel(GetLabels("lbl_Seal_").First(), item, userHealth);
 
+                                }
+                                else if (item._Team == "TERRORISTS")
+                                {
+                                    var playerDataLabel = pnl_Background.Controls
+                                       .OfType<PlayerDataLabel>()
+                                       .Where(pdl => pdl.Name.Contains("lbl_Terr_") && pdl.Text == "")
+                                       .OrderBy(label => label.Name);
+                                    setLabel(GetLabels("lbl_Terr_").First(), item, userHealth);
+
+                                }
                             }
-
-
                         }
+                        catch (Exception)
+                        {
+                            //if we get here, that means we got a 17th person in the room which can apparently happen
+                            throw;
+                        }
+
 
                         lbl_S_Alive.Text = sealsAlive.ToString();
                         lbl_S_Rounds.Text = sealsRoundsWon.ToString();
