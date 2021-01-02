@@ -25,6 +25,8 @@ namespace Socom1StreamOverlay
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
+       
+
 
         [DllImportAttribute("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
@@ -101,13 +103,14 @@ namespace Socom1StreamOverlay
             }
         }
 
-        public void setLabel(PlayerDataLabel label, PlayerDataModel player)
+        public void setLabel(PlayerDataLabel label, PlayerDataModel player,decimal userLivingStatus)
         {
             label.playerName = player._PlayerName;
             label.healthBarColor = Color.FromArgb(25, 140, 25);
             label.playerHealth = (int)player._PlayerHealth;
             label.PDM = player;
-
+            label.m = m;
+            label.UserLivingStatus = userLivingStatus;
             if (player._LivingStatus == "DEAD")
             {
 
@@ -152,14 +155,22 @@ namespace Socom1StreamOverlay
 
                 if ((m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false) != null) && (!m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4,false).SequenceEqual(new byte[] { 0, 0, 0, 0 })))
                 {
-
+                    if (!menu_LetterBoxSpecOn.Checked)
+                    {
+                        m.Write(GameHelper.DISABLE_SPEC_LETTERBOX, 00000000, false);
+                    }
+                    else
+                    {
+                        m.Write(GameHelper.DISABLE_SPEC_LETTERBOX, 0xA0820120, false);
+                        
+                    }
                   
                     if (m.Read<byte>(GameHelper.GAME_ENDED_ADDRESS,false) == 0)
                     {
                         IntPtr playerDataLocationAddress = new IntPtr(Convert.ToInt32(ByteConverstionHelper.byteArrayHexToAddressString(m.Read<byte>(GameHelper.PLAYER_POINTER_ADDRESS, 4, false)), 16));
                      
                         string playerTeam = GameHelper.GetTeamName(ByteConverstionHelper.byteArrayHexToHexString(m.Read<byte>(playerDataLocationAddress + GameHelper.PLAYER_TEAMID_OFFSET, 4,false)));
-
+                        decimal userHealth = ByteConverstionHelper.byteHexFloatToDecimal(m.Read<byte>(playerDataLocationAddress + GameHelper.PLAYER_HEALTH_OFFSET, 4, false));
                         //Get Room specific data
                         int sealsRoundsWon = m.Read<byte>(GameHelper.SEAL_WIN_COUNTER_ADDRESS,false);
                         int terrRoundsWon = m.Read<byte>(GameHelper.TERR_WIN_COUNTER_ADDRESS, false);
@@ -184,7 +195,7 @@ namespace Socom1StreamOverlay
                                .Where(pdl => pdl.Name.Contains("lbl_Seal_") && pdl.Text == "")
                                .OrderBy(label => label.Name); ;
 
-                                setLabel(GetLabels("lbl_Seal_").First(), item);
+                                setLabel(GetLabels("lbl_Seal_").First(), item, userHealth);
 
                             }
                             else if (item._Team == "TERRORISTS")
@@ -193,7 +204,7 @@ namespace Socom1StreamOverlay
                                    .OfType<PlayerDataLabel>()
                                    .Where(pdl => pdl.Name.Contains("lbl_Terr_") && pdl.Text == "")
                                    .OrderBy(label => label.Name);
-                                setLabel(GetLabels("lbl_Terr_").First(), item);
+                                setLabel(GetLabels("lbl_Terr_").First(), item, userHealth);
 
 
                             }
@@ -251,7 +262,7 @@ namespace Socom1StreamOverlay
                         PlayerDataModel PD = new PlayerDataModel();
                         PD._Team = teamName;
                         PD._PlayerHealth = ByteConverstionHelper.byteHexFloatToDecimal(m.Read<byte>(playerPointerAddress + GameHelper.PLAYER_HEALTH_OFFSET,4, false));
-
+                        
                         PD._PlayerName = ByteConverstionHelper.convertBytesToString(m.Read<byte>(playerNamePointerAddress, 20, false));
                         //PD._hasMPBomb = m.readByte((int.Parse(playerPointerAddress, System.Globalization.NumberStyles.HexNumber) + GameHelper.ENTITY_HAS_MPBOMB).ToString("X4"));
 
@@ -278,5 +289,20 @@ namespace Socom1StreamOverlay
             return playerData;
 
         }
+
+        private void menu_LetterBoxSpecOn_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (menu_LetterBoxSpecOn.Checked) 
+            {
+                menu_LetterBoxSpecOn.Text = "On";
+            }
+            else
+            {
+                menu_LetterBoxSpecOn.Text = "Off";
+            }
+
+        }
+
+
     }
 }

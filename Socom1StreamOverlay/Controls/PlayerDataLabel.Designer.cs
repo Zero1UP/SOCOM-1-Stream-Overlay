@@ -43,10 +43,12 @@
             this.lbl_PlayerName.Size = new System.Drawing.Size(100, 19);
             this.lbl_PlayerName.TabIndex = 0;
             this.lbl_PlayerName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_PlayerName.Click += new System.EventHandler(this.lbl_PlayerName_Click);
             // 
             // hb_PlayerHealth
             // 
             this.hb_PlayerHealth.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.hb_PlayerHealth.healthBarColor = System.Drawing.Color.Empty;
             this.hb_PlayerHealth.healthSet = false;
             this.hb_PlayerHealth.Location = new System.Drawing.Point(0, 17);
             this.hb_PlayerHealth.Name = "hb_PlayerHealth";

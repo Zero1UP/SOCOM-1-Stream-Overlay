@@ -35,12 +35,12 @@
             this.lbl_S_Alive = new System.Windows.Forms.Label();
             this.pct_Teams = new System.Windows.Forms.PictureBox();
             this.pnl_Background = new System.Windows.Forms.Panel();
-            this.lbl_S_Rounds = new System.Windows.Forms.Label();
-            this.tmr_PCSX2Check = new System.Windows.Forms.Timer(this.components);
-            this.pnl_PCSX2Detected = new System.Windows.Forms.Panel();
-            this.tmr_GetGameData = new System.Windows.Forms.Timer(this.components);
             this.con_ScoreboardMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.letterBoxSpecCamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_LetterBoxSpecOn = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnl_PCSX2Detected = new System.Windows.Forms.Panel();
+            this.lbl_S_Rounds = new System.Windows.Forms.Label();
             this.lbl_Terr_p8 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
             this.lbl_Terr_p7 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
             this.lbl_Terr_p3 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
@@ -57,6 +57,8 @@
             this.lbl_Seal_p3 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
             this.lbl_Seal_p2 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
             this.lbl_Seal_p1 = new Socom1StreamOverlay.Controls.PlayerDataLabel();
+            this.tmr_PCSX2Check = new System.Windows.Forms.Timer(this.components);
+            this.tmr_GetGameData = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pct_Teams)).BeginInit();
             this.pnl_Background.SuspendLayout();
             this.con_ScoreboardMenu.SuspendLayout();
@@ -156,6 +158,46 @@
             this.pnl_Background.MouseLeave += new System.EventHandler(this.pnl_Background_MouseLeave);
             this.pnl_Background.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pnl_Background_MouseMove);
             // 
+            // con_ScoreboardMenu
+            // 
+            this.con_ScoreboardMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.letterBoxSpecCamToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.con_ScoreboardMenu.Name = "con_ScoreboardMenu";
+            this.con_ScoreboardMenu.Size = new System.Drawing.Size(184, 70);
+            // 
+            // letterBoxSpecCamToolStripMenuItem
+            // 
+            this.letterBoxSpecCamToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menu_LetterBoxSpecOn});
+            this.letterBoxSpecCamToolStripMenuItem.Name = "letterBoxSpecCamToolStripMenuItem";
+            this.letterBoxSpecCamToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.letterBoxSpecCamToolStripMenuItem.Text = "Letter Box Spec Cam";
+            // 
+            // menu_LetterBoxSpecOn
+            // 
+            this.menu_LetterBoxSpecOn.Checked = true;
+            this.menu_LetterBoxSpecOn.CheckOnClick = true;
+            this.menu_LetterBoxSpecOn.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menu_LetterBoxSpecOn.Name = "menu_LetterBoxSpecOn";
+            this.menu_LetterBoxSpecOn.Size = new System.Drawing.Size(180, 22);
+            this.menu_LetterBoxSpecOn.Text = "On";
+            this.menu_LetterBoxSpecOn.CheckStateChanged += new System.EventHandler(this.menu_LetterBoxSpecOn_CheckStateChanged);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // pnl_PCSX2Detected
+            // 
+            this.pnl_PCSX2Detected.Location = new System.Drawing.Point(817, 63);
+            this.pnl_PCSX2Detected.Name = "pnl_PCSX2Detected";
+            this.pnl_PCSX2Detected.Size = new System.Drawing.Size(15, 13);
+            this.pnl_PCSX2Detected.TabIndex = 47;
+            // 
             // lbl_S_Rounds
             // 
             this.lbl_S_Rounds.BackColor = System.Drawing.Color.Transparent;
@@ -167,37 +209,6 @@
             this.lbl_S_Rounds.TabIndex = 45;
             this.lbl_S_Rounds.Text = "0";
             this.lbl_S_Rounds.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tmr_PCSX2Check
-            // 
-            this.tmr_PCSX2Check.Enabled = true;
-            this.tmr_PCSX2Check.Tick += new System.EventHandler(this.tmr_PCSX2Check_Tick);
-            // 
-            // pnl_PCSX2Detected
-            // 
-            this.pnl_PCSX2Detected.Location = new System.Drawing.Point(817, 63);
-            this.pnl_PCSX2Detected.Name = "pnl_PCSX2Detected";
-            this.pnl_PCSX2Detected.Size = new System.Drawing.Size(15, 13);
-            this.pnl_PCSX2Detected.TabIndex = 47;
-            // 
-            // tmr_GetGameData
-            // 
-            this.tmr_GetGameData.Enabled = true;
-            this.tmr_GetGameData.Tick += new System.EventHandler(this.tmr_GetGameData_Tick);
-            // 
-            // con_ScoreboardMenu
-            // 
-            this.con_ScoreboardMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
-            this.con_ScoreboardMenu.Name = "con_ScoreboardMenu";
-            this.con_ScoreboardMenu.Size = new System.Drawing.Size(94, 26);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // lbl_Terr_p8
             // 
@@ -375,6 +386,16 @@
             this.lbl_Seal_p1.Size = new System.Drawing.Size(100, 19);
             this.lbl_Seal_p1.TabIndex = 22;
             // 
+            // tmr_PCSX2Check
+            // 
+            this.tmr_PCSX2Check.Enabled = true;
+            this.tmr_PCSX2Check.Tick += new System.EventHandler(this.tmr_PCSX2Check_Tick);
+            // 
+            // tmr_GetGameData
+            // 
+            this.tmr_GetGameData.Enabled = true;
+            this.tmr_GetGameData.Tick += new System.EventHandler(this.tmr_GetGameData_Tick);
+            // 
             // frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -424,6 +445,8 @@
         private System.Windows.Forms.Timer tmr_GetGameData;
         private System.Windows.Forms.ContextMenuStrip con_ScoreboardMenu;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem letterBoxSpecCamToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menu_LetterBoxSpecOn;
     }
 }
 
